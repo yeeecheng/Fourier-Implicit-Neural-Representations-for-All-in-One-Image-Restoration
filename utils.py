@@ -161,7 +161,7 @@ class RainDataset(Dataset):
             if data_type == 'train':
                 data_path = self.args.data_path + '/input'
                 rain_images = glob.glob(str(data_path) + "/*")
-                self.rain_images = extend_data(self.rain_images, 9)
+                self.rain_images = extend_data(rain_images, 9)
             else:
                 data_path = str(test_path) + '/input'
                 self.rain_images = glob.glob(str(data_path) + "/*")
