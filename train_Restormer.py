@@ -143,18 +143,16 @@ if __name__ == '__main__':
     
     # Testing Datasets
     writer = SummaryWriter('./'+args.save_path+"/"+'tensorboard')
-    test_dataset_RainDrop = RainDataset(args, test_path ='/home/u3732345/multi_weather/allweather_test/test_a')
-    test_dataset_Rain = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/test1')
-    test_dataset_Snow_sample = RainDataset(args,test_path ="/home/u3732345/multi_weather/allweather_test/Snow_Sample/Snow100K")
-    test_dataset_Snow = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/Snow100K_L')
-    test_dataset_test = RainDataset(args,test_path ='/home/u3732345/multi_weather/test')
+    test_dataset_RainDrop = RainDataset(args, test_path ='./AllWeather_Testing/raindrop')
+    test_dataset_Rain = RainDataset(args,test_path ='./AllWeather_Testing/rain')
+    test_dataset_Snow_sample = RainDataset(args,test_path ="./AllWeather_Testing/Snow100K")
+    test_dataset_Snow = RainDataset(args,test_path ='./AllWeather_Testing/Snow100K-L')
 
     # Testing Dataloaders
     test_loader_RainDrop = DataLoader(test_dataset_RainDrop, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Snow_sample = DataLoader(test_dataset_Snow_sample, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Snow = DataLoader(test_dataset_Snow, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Rain = DataLoader(test_dataset_Rain, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
-    test_loader_test = DataLoader(test_dataset_test, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
 
     results, best_psnr_derain, best_ssim_derain, best_psnr_deRainDrop, best_ssim_deRainDrop ,best_psnr_desnow, best_ssim_desnow ,best_psnr_all, best_ssim_all = {'PSNR': [], 'SSIM': []}, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
     model = Restormer(args.num_blocks, args.num_heads, args.channels, args.num_refinement, args.expansion_factor).cuda()
@@ -206,8 +204,8 @@ if __name__ == '__main__':
             optimizer.step()
             total_num += rain.size(0)
             total_loss += loss.item() * rain.size(0)
-            total_loss_INR += loss_INR.item()* rain.size(0)
-            # total_loss_INR += loss_INR* rain.size(0)
+            # total_loss_INR += loss_INR.item()* rain.size(0)
+            total_loss_INR += loss_INR* rain.size(0)
 
             train_bar.set_description('Train Iter: [{}/{}] Loss: {:.3f} loss_INR {:.3f} Loss_class {:.3f}'
                                       .format(n_iter, args.num_iter, total_loss / total_num , total_loss_INR / total_num, total_class_mse/total_num))
@@ -217,15 +215,16 @@ if __name__ == '__main__':
                 writer.add_scalars('Train', {"loss": (total_loss / total_num),
                                              "loss_INR": (total_loss_INR / total_num),
                                              "loss_class": (total_class_mse / total_num)}, n_iter)
+                save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
 
-                if n_iter < 250000:
-                    print('='*100)
-                    save_loop(model, test_loader_test, n_iter,'All', multi_loader=False)
-                    print('='*100)
-                else:
-                    print('='*100)
-                    save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
-                    print('='*100)
+                # if n_iter < 250000:
+                #     print('='*100)
+                #     save_loop(model, test_loader_test, n_iter,'All', multi_loader=False)
+                #     print('='*100)
+                # else:
+                #     print('='*100)
+                #     save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
+                #     print('='*100)
 
 
 
@@ -235,4 +234,8 @@ python train.py --model_file './result_AllinOne/dehaze.pth' --save_path 'result_
 python train.py --num_iter 100000 --val_iter 2000 --save_path 'result_Allweather_minus'
 python train.py --save_path 'result_Allweather_RN50_CA'
 python train.py --save_path ./results/result_lrca3_rn
+'''
+
+'''
+python Fourier-Implicit-Neural-Representations-for-All-in-One-Image-Restoration\train_Restormer.py --save_path ./results/result_lrca3_rn --num_iter 100
 '''

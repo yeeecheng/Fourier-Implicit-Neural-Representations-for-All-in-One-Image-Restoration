@@ -147,14 +147,14 @@ if __name__ == '__main__':
     test_dataset_Rain = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/test1')
     test_dataset_Snow_sample = RainDataset(args,test_path ="/home/u3732345/multi_weather/allweather_test/Snow_Sample/Snow100K")
     test_dataset_Snow = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/Snow100K_L')
-    test_dataset_test = RainDataset(args,test_path ='/home/u3732345/multi_weather/test')
+    # test_dataset_test = RainDataset(args,test_path ='/home/u3732345/multi_weather/test')
 
     # Testing Dataloaders
     test_loader_RainDrop = DataLoader(test_dataset_RainDrop, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Snow_sample = DataLoader(test_dataset_Snow_sample, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Snow = DataLoader(test_dataset_Snow, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Rain = DataLoader(test_dataset_Rain, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
-    test_loader_test = DataLoader(test_dataset_test, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
+    # test_loader_test = DataLoader(test_dataset_test, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
 
     results, best_psnr_derain, best_ssim_derain, best_psnr_deRainDrop, best_ssim_deRainDrop ,best_psnr_desnow, best_ssim_desnow ,best_psnr_all, best_ssim_all = {'PSNR': [], 'SSIM': []}, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
     model = Restormer(args.num_blocks, args.num_heads, args.channels, args.num_refinement, args.expansion_factor).cuda()

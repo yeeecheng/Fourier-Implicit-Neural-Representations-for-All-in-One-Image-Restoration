@@ -21,13 +21,12 @@ from numpy.random import RandomState
 def parse_args():
     desc = 'Pytorch Implementation of \'Restormer: Efficient Transformer for High-Resolution Image Restoration\''
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('--data_path', type=str, default='/home/u3732345/multi_weather/allweather')
+    parser.add_argument('--data_path', type=str, default='allweather')
     # parser.add_argument('--data_name', type=str, default='Rain100L', choices=['dehaze','BSD68', 'urban100','Rain100L'])
     parser.add_argument('--de_type', nargs='+', default=['denoise_15', 'denoise_25', 'denoise_50', 'derain', 'dehaze'],
                     help='which type of degradations is training and testing for.')
     parser.add_argument('--save_path', type=str, default='result_Allweather_pretrain')
-    # parser.add_argument('--num_blocks', nargs='+', type=int, default=[2, 3, 3, 4],
-    parser.add_argument('--num_blocks', nargs='+', type=int, default=[4, 6, 6, 8],
+    parser.add_argument('--num_blocks', nargs='+', type=int, default=[1, 1, 1, 1],
                         help='number of transformer blocks for each level')
     parser.add_argument('--num_heads', nargs='+', type=int, default=[1, 2, 4, 8],
                         help='number of attention heads for each level')
@@ -36,11 +35,7 @@ def parse_args():
     parser.add_argument('--expansion_factor', type=float, default=2.66, help='factor of channel expansion for GDFN')
     parser.add_argument('--num_refinement', type=int, default=4, help='number of channels for refinement stage')
     parser.add_argument('--num_iter', type=int, default=300000, help='iterations of training') #300000
-    # parser.add_argument('--batch_size', nargs='+', type=int, default=[16, 16, 12, 12, 8, 8])
-    parser.add_argument('--batch_size', nargs='+', type=int, default=[16, 16, 4, 4, 2, 2])
-    # parser.add_argument('--batch_size', nargs='+', type=int, default=[16, 16, 4, 4, 2, 2],
-    #                     help='batch size of loading images for progressive learning')
-    # parser.add_argument('--patch_size', nargs='+', type=int, default=[64, 64, 64, 64, 64, 64],
+    parser.add_argument('--batch_size', nargs='+', type=int, default=[16, 16, 4, 4, 2, 2]),
     parser.add_argument('--patch_size', nargs='+', type=int, default=[64, 64, 128, 128, 256, 256])
 
     parser.add_argument('--lr', type=float, default=0.0003, help='initial learning rate') #0.0003
@@ -49,8 +44,7 @@ def parse_args():
     parser.add_argument('--workers', type=int, default=4, help='number of data loading workers')
     parser.add_argument('--seed', type=int, default=-1, help='random seed (-1 for no manual seed)')
     parser.add_argument('--stage', type=str, default='train', choices=['train', 'test'])
-    # parser.add_argument('--val_iter', type=int, default=5000)
-    parser.add_argument('--val_iter', type=int, default=50000)
+    parser.add_argument('--val_iter', type=int, default=10000)
     parser.add_argument('--model_file', type=str, default=None, help='path of pre-trained model file')
 
     return init_args(parser.parse_args())
