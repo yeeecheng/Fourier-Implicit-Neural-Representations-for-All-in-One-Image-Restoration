@@ -3,9 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.transforms import Resize 
-from einops import rearrange
-from .arch_util import LayerNorm
-import math
+# from einops import rearrange
+# import math
 from models.mlp import INR
 
 class MDTA(nn.Module):
