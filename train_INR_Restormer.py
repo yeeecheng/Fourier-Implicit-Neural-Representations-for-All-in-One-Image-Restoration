@@ -143,10 +143,10 @@ if __name__ == '__main__':
     
     # Testing Datasets
     writer = SummaryWriter('./'+args.save_path+"/"+'tensorboard')
-    test_dataset_RainDrop = RainDataset(args, test_path ='/home/u3732345/multi_weather/allweather_test/test_a')
-    test_dataset_Rain = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/test1')
-    test_dataset_Snow_sample = RainDataset(args,test_path ="/home/u3732345/multi_weather/allweather_test/Snow_Sample/Snow100K")
-    test_dataset_Snow = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/Snow100K_L')
+    test_dataset_RainDrop = RainDataset(args, test_path =args.test_data_path+'/raindrop')
+    test_dataset_Rain = RainDataset(args,test_path =args.test_data_path+'/rain')
+    test_dataset_Snow_sample = RainDataset(args,test_path =args.test_data_path+'/Snow100K')
+    test_dataset_Snow = RainDataset(args,test_path =args.test_data_path+'/Snow100K_L')
     # test_dataset_test = RainDataset(args,test_path ='/home/u3732345/multi_weather/test')
 
     # Testing Dataloaders
@@ -217,15 +217,15 @@ if __name__ == '__main__':
                 writer.add_scalars('Train', {"loss": (total_loss / total_num),
                                              "loss_INR": (total_loss_INR / total_num),
                                              "loss_class": (total_class_mse / total_num)}, n_iter)
-
-                if n_iter < 250000:
-                    print('='*100)
-                    save_loop(model, test_loader_test, n_iter,'All', multi_loader=False)
-                    print('='*100)
-                else:
-                    print('='*100)
-                    save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
-                    print('='*100)
+                save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
+                #if n_iter < 250000:
+                #    print('='*100)
+                #    save_loop(model, test_loader_test, n_iter,'All', multi_loader=False)
+                #    print('='*100)
+                #else:
+                #    print('='*100)
+                #    save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
+                #    print('='*100)
 
 
 
