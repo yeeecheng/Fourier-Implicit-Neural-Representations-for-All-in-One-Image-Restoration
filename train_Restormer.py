@@ -52,7 +52,7 @@ def test_loop(net, data_loader, num_iter ,data_name):
             norain = F.pad(norain, (0, padw, 0, padh), 'reflect')
 
             # Model
-            out, INR_feat = model(rain, None)
+            out, _, _ = model(rain, None)
             out = torch.clamp((torch.clamp(out[:, :, :h, :w], 0, 1).mul(255)), 0, 255)#.byte()
 
             norain = torch.clamp(norain[:, :, :h, :w].mul(255), 0, 255)#.byte()
