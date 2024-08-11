@@ -143,10 +143,10 @@ if __name__ == '__main__':
     
     # Testing Datasets
     writer = SummaryWriter('./'+args.save_path+"/"+'tensorboard')
-    test_dataset_RainDrop = RainDataset(args, test_path ='./AllWeather_Testing/raindrop')
-    test_dataset_Rain = RainDataset(args,test_path ='./AllWeather_Testing/rain')
-    test_dataset_Snow_sample = RainDataset(args,test_path ="./AllWeather_Testing/Snow100K")
-    test_dataset_Snow = RainDataset(args,test_path ='./AllWeather_Testing/Snow100K-L')
+    test_dataset_RainDrop = RainDataset(args, test_path ='./'+args.test_data_path+'/raindrop')
+    test_dataset_Rain = RainDataset(args,test_path ='./'+args.test_data_path+'/rain')
+    test_dataset_Snow_sample = RainDataset(args,test_path ='./'+args.test_data_path+'/Snow100K')
+    test_dataset_Snow = RainDataset(args,test_path ='./'+args.test_data_path+'/Snow100K-L')
 
     # Testing Dataloaders
     test_loader_RainDrop = DataLoader(test_dataset_RainDrop, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)

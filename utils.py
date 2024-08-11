@@ -22,6 +22,7 @@ def parse_args():
     desc = 'Pytorch Implementation of \'Restormer: Efficient Transformer for High-Resolution Image Restoration\''
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('--data_path', type=str, default='allweather')
+    parser.add_argument('--test_data_path', type=str, default='AllWeather_Testing')
     # parser.add_argument('--data_name', type=str, default='Rain100L', choices=['dehaze','BSD68', 'urban100','Rain100L'])
     parser.add_argument('--de_type', nargs='+', default=['denoise_15', 'denoise_25', 'denoise_50', 'derain', 'dehaze'],
                     help='which type of degradations is training and testing for.')
