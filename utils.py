@@ -54,6 +54,7 @@ def parse_args():
 class Config(object):
     def __init__(self, args):
         self.data_path = args.data_path
+        self.test_data_path = args.test_data_path
         self.save_path = args.save_path
         self.num_blocks = args.num_blocks
         self.num_heads = args.num_heads
