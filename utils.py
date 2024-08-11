@@ -175,10 +175,10 @@ class RainDataset(Dataset):
         rain = T.to_tensor(Image.open(self.rain_images[idx % self.num]).convert('RGB'))
         if self.dataset_name == 'WeatherStream':
             change_name = self.rain_images[idx % self.num].split('/')[-1]
-            gt_path = self.rain_images[idx % self.num].replace('input','target').replace(change_name,'gt.png')
+            gt_path = self.rain_images[idx % self.num][::-1].replace('input'[::-1],'target'[::-1], 1)[::-1].replace(change_name,'gt.png')
             norain =  T.to_tensor(Image.open(gt_path).convert('RGB'))
         else:
-            norain =  T.to_tensor(Image.open(self.rain_images[idx % self.num].replace('input','gt')).convert('RGB'))
+            norain =  T.to_tensor(Image.open(self.rain_images[idx % self.num][::-1].replace('input'[::-1],'gt'[::-1], 1)[::-1]).convert('RGB'))
 
         h, w = rain.shape[1:]
         if self.data_type == 'train':
