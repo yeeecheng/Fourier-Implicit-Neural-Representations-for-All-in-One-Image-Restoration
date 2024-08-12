@@ -146,7 +146,7 @@ if __name__ == '__main__':
     test_dataset_RainDrop = RainDataset(args, test_path =args.test_data_path+'/raindrop')
     test_dataset_Rain = RainDataset(args,test_path =args.test_data_path+'/rain')
     test_dataset_Snow_sample = RainDataset(args,test_path =args.test_data_path+'/Snow100K')
-    test_dataset_Snow = RainDataset(args,test_path =args.test_data_path+'/Snow100K_L')
+    test_dataset_Snow = RainDataset(args,test_path =args.test_data_path+'/Snow100K-L')
     # test_dataset_test = RainDataset(args,test_path ='/home/u3732345/multi_weather/test')
 
     # Testing Dataloaders
