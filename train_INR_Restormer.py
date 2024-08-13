@@ -169,21 +169,25 @@ if __name__ == '__main__':
         # model.load_state_dict(torch.load(args.model_file), strict=True)
         save_loop(model, Test_Loaders, 1,'All_Test', multi_loader=True, save=False ,mode=args.stage)
     else:
+        optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
+        last_epoch = 1
         if args.model_file:
             print(f'Load model ckpt from : {args.model_file} ....')
-            model.load_state_dict(torch.load(args.model_file), strict=True)
+            checkpoint = torch.load(args.model_file)
+            model.load_state_dict(checkpoint['model_state_dict'], strict=True)
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            last_epoch = checkpoint['epoch']
 
-        optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
         lr_scheduler = CosineAnnealingLR(optimizer, T_max=args.num_iter, eta_min=1e-6)
         total_loss, total_num, results['Loss'], i = 0.0, 0, [], 0
         total_loss_INR = 0.0
         total_loss_mse = 0.0
         total_class_mse = 0.0
-        train_bar = tqdm(range(1, args.num_iter + 1), initial=1, dynamic_ncols=True)
+        train_bar = tqdm(range(last_epoch, args.num_iter + 1), initial=1, dynamic_ncols=True)
         
         for n_iter in train_bar:
             # progressive learning
-            if n_iter == 1 or n_iter - 1 in args.milestone:
+            if n_iter == last_epoch or n_iter - 1 in args.milestone:
                 end_iter = args.milestone[i] if i < len(args.milestone) else args.num_iter
                 start_iter = args.milestone[i - 1] if i > 0 else 0
                 length = args.batch_size[i] * (end_iter - start_iter)
