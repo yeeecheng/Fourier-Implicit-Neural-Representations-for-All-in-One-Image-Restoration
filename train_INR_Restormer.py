@@ -143,18 +143,18 @@ if __name__ == '__main__':
     
     # Testing Datasets
     writer = SummaryWriter('./'+args.save_path+"/"+'tensorboard')
-    test_dataset_RainDrop = RainDataset(args, test_path ='/home/u3732345/multi_weather/allweather_test/test_a')
-    test_dataset_Rain = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/test1')
-    test_dataset_Snow_sample = RainDataset(args,test_path ="/home/u3732345/multi_weather/allweather_test/Snow_Sample/Snow100K")
-    test_dataset_Snow = RainDataset(args,test_path ='/home/u3732345/multi_weather/allweather_test/Snow100K_L')
-    test_dataset_test = RainDataset(args,test_path ='/home/u3732345/multi_weather/test')
+    test_dataset_RainDrop = RainDataset(args, test_path =args.test_data_path+'/raindrop')
+    test_dataset_Rain = RainDataset(args,test_path =args.test_data_path+'/rain')
+    test_dataset_Snow_sample = RainDataset(args,test_path =args.test_data_path+'/Snow100K')
+    test_dataset_Snow = RainDataset(args,test_path =args.test_data_path+'/Snow100K-L')
+    # test_dataset_test = RainDataset(args,test_path ='/home/u3732345/multi_weather/test')
 
     # Testing Dataloaders
     test_loader_RainDrop = DataLoader(test_dataset_RainDrop, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Snow_sample = DataLoader(test_dataset_Snow_sample, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Snow = DataLoader(test_dataset_Snow, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
     test_loader_Rain = DataLoader(test_dataset_Rain, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
-    test_loader_test = DataLoader(test_dataset_test, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
+    # test_loader_test = DataLoader(test_dataset_test, batch_size=1, shuffle=False, num_workers=args.workers,pin_memory=True)
 
     results, best_psnr_derain, best_ssim_derain, best_psnr_deRainDrop, best_ssim_deRainDrop ,best_psnr_desnow, best_ssim_desnow ,best_psnr_all, best_ssim_all = {'PSNR': [], 'SSIM': []}, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
     model = Restormer(args.num_blocks, args.num_heads, args.channels, args.num_refinement, args.expansion_factor).cuda()
@@ -169,21 +169,25 @@ if __name__ == '__main__':
         # model.load_state_dict(torch.load(args.model_file), strict=True)
         save_loop(model, Test_Loaders, 1,'All_Test', multi_loader=True, save=False ,mode=args.stage)
     else:
+        optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
+        last_epoch = 1
         if args.model_file:
             print(f'Load model ckpt from : {args.model_file} ....')
-            model.load_state_dict(torch.load(args.model_file), strict=True)
+            checkpoint = torch.load(args.model_file)
+            model.load_state_dict(checkpoint['model_state_dict'], strict=True)
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            last_epoch = checkpoint['epoch']
 
-        optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
         lr_scheduler = CosineAnnealingLR(optimizer, T_max=args.num_iter, eta_min=1e-6)
         total_loss, total_num, results['Loss'], i = 0.0, 0, [], 0
         total_loss_INR = 0.0
         total_loss_mse = 0.0
         total_class_mse = 0.0
-        train_bar = tqdm(range(1, args.num_iter + 1), initial=1, dynamic_ncols=True)
+        train_bar = tqdm(range(last_epoch, args.num_iter + 1), initial=1, dynamic_ncols=True)
         
         for n_iter in train_bar:
             # progressive learning
-            if n_iter == 1 or n_iter - 1 in args.milestone:
+            if n_iter == last_epoch or n_iter - 1 in args.milestone:
                 end_iter = args.milestone[i] if i < len(args.milestone) else args.num_iter
                 start_iter = args.milestone[i - 1] if i > 0 else 0
                 length = args.batch_size[i] * (end_iter - start_iter)
@@ -217,15 +221,15 @@ if __name__ == '__main__':
                 writer.add_scalars('Train', {"loss": (total_loss / total_num),
                                              "loss_INR": (total_loss_INR / total_num),
                                              "loss_class": (total_class_mse / total_num)}, n_iter)
-
-                if n_iter < 250000:
-                    print('='*100)
-                    save_loop(model, test_loader_test, n_iter,'All', multi_loader=False)
-                    print('='*100)
-                else:
-                    print('='*100)
-                    save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
-                    print('='*100)
+                save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
+                #if n_iter < 250000:
+                #    print('='*100)
+                #    save_loop(model, test_loader_test, n_iter,'All', multi_loader=False)
+                #    print('='*100)
+                #else:
+                #    print('='*100)
+                #    save_loop(model, Test_Sample_Loaders, n_iter,'All', multi_loader=True)
+                #    print('='*100)
 
 
 
