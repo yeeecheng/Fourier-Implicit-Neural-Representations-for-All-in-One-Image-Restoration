@@ -160,8 +160,6 @@ if __name__ == '__main__':
     Test_Loaders = [test_loader_RainDrop, test_loader_Rain, test_loader_Snow]
     Test_Sample_Loaders = [test_loader_RainDrop, test_loader_Rain, test_loader_Snow_sample]
 
-    optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
-    
 
     if args.stage == 'test':
         print("Testing ...")
@@ -169,6 +167,8 @@ if __name__ == '__main__':
         # model.load_state_dict(torch.load(args.model_file), strict=True)
         save_loop(model, Test_Loaders, 1,'All_Test', multi_loader=True, save=False ,mode=args.stage)
     else:
+        optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
+        last_epoch = 1
         if args.model_file:
             print(f'Load model ckpt from : {args.model_file} ....')
             checkpoint = torch.load(args.model_file)
@@ -185,7 +185,7 @@ if __name__ == '__main__':
         
         for n_iter in train_bar:
             # progressive learning
-            if n_iter == 1 or n_iter - 1 in args.milestone:
+            if n_iter == last_epoch or n_iter - 1 in args.milestone:
                 end_iter = args.milestone[i] if i < len(args.milestone) else args.num_iter
                 start_iter = args.milestone[i - 1] if i > 0 else 0
                 length = args.batch_size[i] * (end_iter - start_iter)
